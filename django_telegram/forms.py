@@ -1,0 +1,63 @@
+from django import forms
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.models import User
+from django.forms import ModelForm
+from django.forms.widgets import TextInput, CheckboxInput, Select
+from .models import *
+
+class Log_in_form(AuthenticationForm):
+    def __init__(self, *args, **kwargs):
+        super(Log_in_form, self).__init__(*args, **kwargs)
+        self.fields['username'].widget.attrs.update({
+                 'placeholder': 'Username',
+                 "class":"required"})
+        self.fields['password'].widget.attrs.update({
+                 'placeholder': 'Password',
+                 "class":"required"})
+             
+class ChildForm(forms.ModelForm):
+    class Meta:
+        model = Child
+        fields = '__all__'
+        widgets = {
+            'name': TextInput(attrs={'class': 'form-control'}),
+            'date_of_birth': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'gender': Select(attrs={'class': 'form-control'}),
+            'status': CheckboxInput(),
+            'hall': Select(attrs={'class': 'form-control'}),
+            'visit': Select(attrs={'class': 'form-control'}),
+            'partner': Select(attrs={'class': 'form-control'}),
+            'client': Select(attrs={'class': 'form-control'}),
+            'discount': Select(attrs={'class': 'form-control'}),
+        }
+
+class ClientForm(ModelForm):
+    # description = forms.CharField(widget=CKEditorWidget(attrs={'class':'form-control'}))
+    class Meta:
+        model = Client
+        fields = (
+            'name',
+            'mobile_phone',
+            'large_families',
+            'payment_client'
+        )
+        widgets = {
+            'name': TextInput(attrs={'class': 'form-control'}),
+            'mobile_phone': TextInput(attrs={'class': 'form-control'}),
+            'large_families': CheckboxInput(),
+            'payment_client': Select(attrs={'class': 'form-control'}),
+        }
+        # widgets = {
+            
+            # 'brand':  Select2AddAnother(
+                # reverse_lazy('add_brand'),
+            # )
+        # } 
+        
+class ClientOrderForm(ModelForm):
+    class Meta:
+        model = Order
+        fields = ('client',)
+        widgets = {
+            'client': Select(attrs={'class': 'form-control'}),
+        }

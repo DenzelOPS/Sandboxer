@@ -1,0 +1,114 @@
+<!-- base.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+	<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <title>{% block title %}Песочница{% endblock %}</title>
+
+    <!-- Add your custom styles here -->
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+        }
+
+        nav ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #333;
+        }
+
+        nav li {
+            float: left;
+        }
+
+        nav a {
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+        }
+
+        nav a:hover {
+            background-color: #ddd;
+            color: black;
+        }
+
+        main {
+            padding: 20px;
+        }
+
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 1px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        @media only screen and (max-width: 600px) {
+            nav {
+                text-align: center;
+            }
+
+            nav ul {
+                display: flex;
+                flex-direction: column;
+            }
+
+            nav li {
+                float: none;
+                margin-bottom: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>{% block header %}Песочница{% endblock %}</h1>
+    </header>
+
+    <nav>
+        <ul class="row justify-content-center">
+            <li><a href="{% url 'index' %}">Добавить клиента</a></li>
+			<li><a href="{% url 'add_child' %}">Добавить ребенка</a></li>
+			<li><a href="{% url 'add_product' %}">Добавить продукт</a></li>
+			{% if user.is_authenticated %}
+			<li><a href="{% url 'logout' %}">Выход</a></li>
+			{% else %}
+			<li><a href="{% url 'login' %}">Вход</a></li>
+			{% endif %}
+            <!-- Add more navigation links as needed -->
+        </ul>
+    </nav>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!--<footer>
+        <p>&copy; 2024 Песочница. All rights reserved.</p>
+    </footer>
+	-->
+</body>
+</html>

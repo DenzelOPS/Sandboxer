@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<form method="post" action="{% url 'add_child' %}">
+    {% csrf_token %}
+    
+    <div class="container mt-4">
+        {{ formset.management_form }}
+        
+        <div id="child-forms">
+            {% for form in formset.forms %}
+                <div class="card mb-3 {% if forloop.counter > 3 %}d-none{% endif %}">
+                    <div class="card-body">
+                        {{ form.as_p }}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <button type="button" id="add-child-form">Add Child</button>
+        
+        <button type="submit">Submit</button>
+    </div>
+</form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const formsetContainer = document.getElementById('child-forms');
+        const addButton = document.getElementById('add-child-form');
+        let formCounter = {{ formset.total_form_count }};
+        
+        addButton.addEventListener('click', function() {
+            const forms = document.querySelectorAll('.card.d-none');
+            if (forms.length > 0) {
+                const form = forms[0];
+                form.classList.remove('d-none');
+                
+                // Update the form's prefix in the new form
+                form.querySelector('input[name*=name]').name = 'child-' + (formCounter - 1) + '-name';
+                form.querySelector('input[name*=date_of_birth]').name = 'child-' + (formCounter - 1) + '-date_of_birth';
+                form.querySelector('select[name*=gender]').name = 'child-' + (formCounter - 1) + '-gender';
+                form.querySelector('input[name*=status]').name = 'child-' + (formCounter - 1) + '-status';
+                form.querySelector('select[name*=hall]').name = 'child-' + (formCounter - 1) + '-hall';
+                form.querySelector('select[name*=visit]').name = 'child-' + (formCounter - 1) + '-visit';
+                form.querySelector('select[name*=partner]').name = 'child-' + (formCounter - 1) + '-partner';
+                form.querySelector('select[name*=client]').name = 'child-' + (formCounter - 1) + '-client';
+                form.querySelector('select[name*=discount]').name = 'child-' + (formCounter - 1) + '-discount';
+
+                formCounter++;
+            }
+
+            // Hide the 'Add Child' button if no more forms are available
+            if (document.querySelectorAll('.card.d-none').length === 0) {
+                addButton.style.display = 'none';
+            }
+        });
+    });
+</script>
+{% endblock %}

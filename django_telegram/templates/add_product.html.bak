@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<style>
+    .quantity-cell {
+        padding-right: 10px; /* Adjust the spacing as needed */
+    }
+
+    .button-cell {
+        padding-left: 10px; /* Adjust the spacing as needed */
+    }
+</style>
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>  <!-- Include jQuery -->
+
+<script>
+    function adjustQuantity(productId, action) {
+        var amountElement = document.getElementById('amount-' + productId);
+        var currentAmount = parseInt(amountElement.textContent);
+
+        if (action === 'increment') {
+            currentAmount += 1;
+        } else if (action === 'decrement' && currentAmount > 0) {
+            currentAmount -= 1;
+        }
+
+        amountElement.textContent = currentAmount;
+    }
+
+    function submitOrder() {
+        var data = {
+            'client_id': document.getElementById('id_client').value, // Add client ID to the data
+            'products': {}
+        };
+
+        {% for product in products %}
+            var productId = '{{ product.id }}';
+            var quantity = parseInt(document.getElementById('amount-' + productId).textContent);
+            data['products'][productId] = quantity;
+        {% endfor %}
+
+        $.ajax({
+            type: 'POST',
+            url: '{% url "submit_order" %}',  // Replace with the actual URL of your view
+            data: JSON.stringify(data),
+            contentType: 'application/json',
+            success: function(response) {
+                console.log(response);
+				$('#message').text(response.message.replace(/\n/g, '<br>')); );
+                // Handle success if needed
+            },
+            error: function(error) {
+                console.log(error);
+                // Handle error if needed
+            }
+        });
+    }
+</script>
+
+<h2>Детали заказа {{ client }}</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>Товар</th>
+            <th>Кол-во</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for product in products %}
+            <tr>
+                <td>{{ product.product_name }}</td>
+                <td id="amount-{{ product.id }}" class="quantity-cell">0</td>
+                <td class="button-cell">
+                    <button onclick="adjustQuantity('{{ product.id }}', 'decrement')" class="btn btn-primary">-</button>
+                    <button onclick="adjustQuantity('{{ product.id }}', 'increment')" class="btn btn-primary">+</button>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+	
+</table>
+<button onclick="submitOrder()" class="btn btn-primary">Выдать чек</button>
+
+<input type="hidden" id="client" value="{{ selected_client_id }}">
+
+<div id="message">
+</div>
+{% endblock %}
